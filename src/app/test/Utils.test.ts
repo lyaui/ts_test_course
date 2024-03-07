@@ -14,23 +14,50 @@ describe('Utils test suite', () => {
     console.log('Teardown');
   });
 
-  describe.only('Utils test suite', () => {
+  describe('Utils test suite', () => {
     it('Should return correct upperCase', () => {
       const actual = sut.toUpperCase('abc');
       expect(actual).toBe('ABC');
+    });
 
-      console.log('Actual test');
+    it('should throw error on invalid argument - function', () => {
+      const expected = 'Invalid argument!';
+      // 必須將 code 包在 function 中才會吐 error
+      function errorFn() {
+        sut.toUpperCase('');
+      }
+
+      expect(errorFn).toThrow();
+      expect(errorFn).toThrow(expected);
+    });
+
+    it('should throw error on invalid argument - arrow function', () => {
+      const expected = 'Invalid argument!';
+
+      expect(() => {
+        sut.toUpperCase('');
+      }).toThrow(expected);
+    });
+
+    it('should throw error on invalid argument - try catch block', (done) => {
+      const expected = 'Invalid argument!';
+      try {
+        sut.toUpperCase('');
+        done('GetStringInfo should throw error for invalid');
+      } catch (error) {
+        // 如果沒有 throw 也會通過
+        expect(error).toBeInstanceOf(Error);
+        expect(error).toHaveProperty('message', expected);
+        done();
+      }
     });
   });
 
   it('should return uppercase', () => {
     // arrange:
-    const sut = toUpperCase;
     const expected = 'ABC';
-
     // act:
     const actual = toUpperCase('abc');
-
     // assertion
     expect(actual).toBe(expected);
   });
