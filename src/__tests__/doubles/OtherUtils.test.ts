@@ -1,6 +1,7 @@
 import {
   calculateComplexity,
   toUpperCaseWithCb,
+  OtherStringUtils,
 } from '../../app/doubles/OtherUtils';
 
 describe('OtherUtils test suite', () => {
@@ -30,6 +31,7 @@ describe('OtherUtils test suite', () => {
     expect(actual).toBe('ABC');
   });
 
+  // Mocks
   describe('Tracking callbacks', () => {
     let cbArgs = [];
     let timesCalled = 0;
@@ -78,6 +80,39 @@ describe('OtherUtils test suite', () => {
       expect(actual).toBe('ABC');
       expect(callbackMock).toHaveBeenCalledWith(`called function with abc`);
       expect(callbackMock).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  // Spies
+  describe('OtherStringUtils tests with spies', () => {
+    let sut: OtherStringUtils;
+
+    beforeEach(() => {
+      sut = new OtherStringUtils();
+    });
+
+    it('Use a spy to track calls', () => {
+      const toUpperCaseSpy = jest.spyOn(sut, 'toUpperCase');
+      sut.toUpperCase('abc');
+      expect(toUpperCaseSpy).toHaveBeenCalledWith('abc');
+    });
+
+    it('Use a spy to track calls to other module', () => {
+      const consoleLogSpy = jest.spyOn(console, 'log');
+      sut.logString('abc');
+      expect(consoleLogSpy).toHaveBeenCalledWith('abc');
+    });
+
+    // 測試 private method
+    it('Use a spy to replace the implementation of a method', () => {
+      // jest.spyOn(sut, 'callExternalService') 會報錯，因為是 primate method 不能在外面呼叫
+      // 測試用的奧步呼叫 private method
+      const callExternalServiceSpy = jest
+        .spyOn(sut as any, 'callExternalService')
+        .mockImplementation(() => {
+          console.log('Calling mocked implementation!!!');
+        });
+      (sut as any).callExternalService();
     });
   });
 });
